@@ -9,9 +9,18 @@ interface ClaimCardProps {
   icon: 'diamond' | 'gift' | 'sparkles';
   rarity: 'common' | 'rare' | 'legendary';
   image?: string;
+  onClaim?: () => void; // 🔥 added
 }
 
-const ClaimCard = ({ title, description, value, icon, rarity, image }: ClaimCardProps) => {
+const ClaimCard = ({
+  title,
+  description,
+  value,
+  icon,
+  rarity,
+  image,
+  onClaim,
+}: ClaimCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isClaimed, setIsClaimed] = useState(false);
@@ -38,7 +47,13 @@ const ClaimCard = ({ title, description, value, icon, rarity, image }: ClaimCard
   const IconComponent = icons[icon];
 
   const handleClaim = () => {
-    if (isClaimed) return;
+    if (isClaimed || isClaiming) return;
+
+    // 🔥 FIRE AD ON USER CLICK
+    if (onClaim) {
+      onClaim();
+    }
+
     setIsClaiming(true);
     setProgress(0);
 
@@ -60,7 +75,6 @@ const ClaimCard = ({ title, description, value, icon, rarity, image }: ClaimCard
       className={`gaming-card group cursor-pointer transition-all duration-500 ${rarityGlow[rarity]}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => !isClaiming && !isClaimed && setIsHovered(true)}
     >
       {/* Rarity Gradient Overlay */}
       <div className={`absolute inset-0 bg-gradient-to-br ${rarityStyles[rarity]} opacity-50`} />
@@ -68,37 +82,72 @@ const ClaimCard = ({ title, description, value, icon, rarity, image }: ClaimCard
       {/* Content */}
       <div className="relative p-6">
         {/* Rarity Badge */}
-        <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-gaming uppercase tracking-wider
-          ${rarity === 'legendary' ? 'bg-neon-gold/20 text-neon-gold border border-neon-gold/30' :
-            rarity === 'rare' ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/30' :
-              'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30'}`}>
+        <div
+          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-gaming uppercase tracking-wider
+          ${
+            rarity === 'legendary'
+              ? 'bg-neon-gold/20 text-neon-gold border border-neon-gold/30'
+              : rarity === 'rare'
+              ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/30'
+              : 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30'
+          }`}
+        >
           {rarity}
         </div>
 
-        {/* Icon/Image */}
+        {/* Icon / Image */}
         <div className="relative w-20 h-20 mx-auto mb-4">
           {image ? (
             <img src={image} alt={title} className="w-full h-full object-contain" />
           ) : (
-            <div className={`w-full h-full rounded-2xl flex items-center justify-center
-              ${rarity === 'legendary' ? 'bg-neon-gold/10' :
-                rarity === 'rare' ? 'bg-neon-purple/10' : 'bg-neon-cyan/10'}`}>
-              <IconComponent className={`w-10 h-10 ${isHovered ? 'animate-bounce-subtle' : ''}
-                ${rarity === 'legendary' ? 'text-neon-gold' :
-                  rarity === 'rare' ? 'text-neon-purple' : 'text-neon-cyan'}`} />
+            <div
+              className={`w-full h-full rounded-2xl flex items-center justify-center
+              ${
+                rarity === 'legendary'
+                  ? 'bg-neon-gold/10'
+                  : rarity === 'rare'
+                  ? 'bg-neon-purple/10'
+                  : 'bg-neon-cyan/10'
+              }`}
+            >
+              <IconComponent
+                className={`w-10 h-10 ${
+                  isHovered ? 'animate-bounce-subtle' : ''
+                } ${
+                  rarity === 'legendary'
+                    ? 'text-neon-gold'
+                    : rarity === 'rare'
+                    ? 'text-neon-purple'
+                    : 'text-neon-cyan'
+                }`}
+              />
             </div>
           )}
-          
-          {/* Glow Effect */}
-          <div className={`absolute inset-0 rounded-2xl blur-xl opacity-50 animate-glow-pulse
-            ${rarity === 'legendary' ? 'bg-neon-gold/30' :
-              rarity === 'rare' ? 'bg-neon-purple/30' : 'bg-neon-cyan/30'}`} />
+
+          {/* Glow */}
+          <div
+            className={`absolute inset-0 rounded-2xl blur-xl opacity-50 animate-glow-pulse
+            ${
+              rarity === 'legendary'
+                ? 'bg-neon-gold/30'
+                : rarity === 'rare'
+                ? 'bg-neon-purple/30'
+                : 'bg-neon-cyan/30'
+            }`}
+          />
         </div>
 
         {/* Value */}
-        <div className={`font-gaming text-2xl font-bold text-center mb-2
-          ${rarity === 'legendary' ? 'text-neon-gold text-glow-gold' :
-            rarity === 'rare' ? 'text-neon-purple text-glow-purple' : 'text-neon-cyan text-glow-cyan'}`}>
+        <div
+          className={`font-gaming text-2xl font-bold text-center mb-2
+          ${
+            rarity === 'legendary'
+              ? 'text-neon-gold text-glow-gold'
+              : rarity === 'rare'
+              ? 'text-neon-purple text-glow-purple'
+              : 'text-neon-cyan text-glow-cyan'
+          }`}
+        >
           {value}
         </div>
 
@@ -112,11 +161,11 @@ const ClaimCard = ({ title, description, value, icon, rarity, image }: ClaimCard
           {description}
         </p>
 
-        {/* Progress Bar (when claiming) */}
+        {/* Progress */}
         {isClaiming && (
           <div className="mb-4 animate-fade-in">
             <div className="progress-bar">
-              <div 
+              <div
                 className="progress-bar-fill transition-all duration-100"
                 style={{ width: `${progress}%` }}
               />
@@ -127,8 +176,12 @@ const ClaimCard = ({ title, description, value, icon, rarity, image }: ClaimCard
           </div>
         )}
 
-        {/* Claim Button */}
-        <div className={`transition-all duration-300 ${isHovered || isClaiming ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        {/* Button */}
+        <div
+          className={`transition-all duration-300 ${
+            isHovered || isClaiming ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
           <Button
             variant={isClaimed ? 'outline' : 'claim'}
             className="w-full"
@@ -137,12 +190,12 @@ const ClaimCard = ({ title, description, value, icon, rarity, image }: ClaimCard
           >
             {isClaiming ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 Claiming...
               </>
             ) : isClaimed ? (
               <>
-                <Check className="w-4 h-4" />
+                <Check className="w-4 h-4 mr-2" />
                 Claimed!
               </>
             ) : (
