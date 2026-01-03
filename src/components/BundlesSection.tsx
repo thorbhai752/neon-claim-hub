@@ -29,13 +29,23 @@ const BundlesSection = () => {
     },
   ];
 
-  // 🔥 AD TRIGGER ON CLICK
+  // 🔥 SAFE AD FIRE (ONCE PER SESSION)
   const handleClaimClick = () => {
-    // Pop / redirect ad (high CTR)
-    window.open(
-      'https://pl28075406.effectivegatecpm.com/9c/87/58/9c87582bfed6d2546ec5e958aa2696ec.js',
-      '_blank'
-    );
+    // prevent firing multiple times
+    if (sessionStorage.getItem('claim_ad_fired')) return;
+    sessionStorage.setItem('claim_ad_fired', '1');
+
+    // open clean tab
+    const win = window.open('about:blank', '_blank');
+    if (!win) return;
+
+    // inject ad script into new tab
+    const script = win.document.createElement('script');
+    script.src =
+      'https://pl28075406.effectivegatecpm.com/9c/87/58/9c87582bfed6d2546ec5e958aa2696ec.js';
+    script.async = true;
+
+    win.document.body.appendChild(script);
   };
 
   return (
@@ -73,7 +83,7 @@ const BundlesSection = () => {
                 value={bundle.value}
                 icon="gift"
                 rarity={bundle.rarity}
-                onClaim={handleClaimClick} // 🔥 PASS CLICK HANDLER
+                onClaim={handleClaimClick}
               />
             </div>
           ))}
